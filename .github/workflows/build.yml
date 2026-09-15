@@ -1,0 +1,26 @@
+name: Build Kiosk APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Build APK
+        run: |
+          if [ -f "app/build.gradle" ]; then
+            gradle :app:assembleDebug --no-daemon
+          else
+            gradle assembleDebug --no-daemon
+          fi
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Standee-Kiosk-APK
+          path: "**/build/outputs/apk/debug/*.apk"
